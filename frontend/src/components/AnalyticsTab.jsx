@@ -201,12 +201,6 @@ export default function AnalyticsTab({ playerId, position, analyticsData, schedu
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-      {/* Momentum */}
-      <div>
-        <SectionLabel>Momentum</SectionLabel>
-        <MomentumPanel momentum={analyticsData?.momentum} loading={analyticsLoading} />
-      </div>
-
       {/* Efficiency + Usage */}
       <EfficiencyPanel
         efficiency={analyticsData?.efficiency}

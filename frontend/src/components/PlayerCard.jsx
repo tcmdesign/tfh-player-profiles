@@ -75,20 +75,7 @@ function TabBanner({ activeTab, player, rankings, stats, analyticsData, analytic
     </div>
   );
 
-  if (activeTab === 'Analytics') {
-    const mom = analyticsData?.momentum;
-    const loading = analyticsLoading || !mom;
-    const up   = mom?.direction === 'up';
-    const down = mom?.direction === 'down';
-    const accentColor = up ? 'var(--fp-green)' : down ? 'var(--fp-pink)' : 'var(--fp-steel)';
-    const arrow = up ? '▲' : down ? '▼' : '—';
-    const pct   = mom?.pctChange != null ? `${up ? '+' : ''}${Math.round(mom.pctChange)}%` : '--';
-    return wrap(<>
-      <BannerBox label="MOMENTUM" value={loading ? '…' : `${arrow} ${pct}`} sub="last 3 vs season avg" color={loading ? 'var(--fp-muted)' : accentColor} accent={loading ? undefined : accentColor} />
-      <BannerBox label="LAST 3 AVG" value={loading ? '…' : (mom?.last3Avg?.toFixed(1) ?? '--')} sub="pts · recent form" />
-      <BannerBox label="SEASON AVG" value={loading ? '…' : (mom?.seasonAvg?.toFixed(1) ?? '--')} sub="pts · full season" color="var(--fp-muted)" />
-    </>);
-  }
+  if (activeTab === 'Analytics') return null;
 
   if (activeTab === 'Depth Chart') {
     const recent = stats?.recent || [];
