@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { usePlayerList } from '../hooks/usePlayerList';
 import { useCompare } from '../context/CompareContext';
 import { getInjuryDisplay } from '../utils/injuryUtils';
+import { BASE } from '../api/client';
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE'];
 
@@ -63,19 +64,20 @@ function ColHeader({ label, col, sort, onSort, align = 'right', width }) {
   );
 }
 
-function InjuryBadge({ status, injuryStatus }) {
-  const inj = getInjuryDisplay(status, injuryStatus);
-  if (!inj) return null;
+function WriteupIcon() {
   return (
-    <span title={injuryStatus || status} style={{
+    <span title="TFH Outlook available" style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: "'Outfit', sans-serif", fontSize: 10, fontWeight: 700,
-      lineHeight: 1, padding: '2px 5px', borderRadius: 3,
-      background: inj.bg, color: inj.color,
-      border: `1px solid ${inj.color}60`,
-      marginLeft: 4, flexShrink: 0,
+      marginLeft: 6, flexShrink: 0,
+      width: 16, height: 16,
+      borderRadius: '50%',
+      background: 'rgba(229,57,53,0.15)',
+      border: '1px solid rgba(229,57,53,0.4)',
+      boxShadow: '0 0 6px rgba(229,57,53,0.5)',
+      color: '#E53935',
+      fontSize: 9,
     }}>
-      {inj.badge}
+      ✎
     </span>
   );
 }
@@ -85,10 +87,22 @@ const STAT_NUM = {
   fontSize: 14, fontWeight: 400, color: 'var(--fp-text)',
 };
 
-function PlayerRow({ player, idx, onSelect }) {
+function StatCell({ value, dash = true }) {
+  return (
+    <td style={{ padding: '0 12px', textAlign: 'right' }}>
+      {value != null && value > 0
+        ? <span style={STAT_NUM}>{value.toLocaleString()}</span>
+        : <span style={{ color: 'var(--fp-muted)', fontSize: 12 }}>{dash ? '—' : ''}</span>
+      }
+    </td>
+  );
+}
+
+function PlayerRow({ player, idx, onSelect, hasWriteup }) {
   const [hovered, setHovered] = useState(false);
   const { add, remove, isComparing } = useCompare();
   const comparing = isComparing(player.id);
+  const pos = player.position;
 
   return (
     <tr
@@ -115,7 +129,7 @@ function PlayerRow({ player, idx, onSelect }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar player={player} size={36} />
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <span style={{
                 fontFamily: "'Barlow Condensed', sans-serif",
                 fontSize: 16, fontWeight: 700,
@@ -124,7 +138,7 @@ function PlayerRow({ player, idx, onSelect }) {
               }}>
                 {player.name}
               </span>
-              {/* InjuryBadge hidden for now */}
+              {hasWriteup && <WriteupIcon />}
             </div>
             <div style={{ fontSize: 11, color: 'var(--fp-muted)' }}>
               {player.position} · {player.team}
@@ -141,11 +155,23 @@ function PlayerRow({ player, idx, onSelect }) {
         }
       </td>
 
-      {/* Avg Pts (2025 season) */}
+      {/* Avg Pts (2025) */}
       <td style={{ padding: '0 12px', textAlign: 'right' }}>
         <span style={STAT_NUM}>{player.season_avg_pts ?? '—'}</span>
         <div style={{ fontSize: 10, color: 'var(--fp-muted)' }}>2025</div>
       </td>
+
+      {/* Rush Yds — RB only meaningful, show for all */}
+      <StatCell value={player.total_rush_yards} />
+
+      {/* Rec Yds */}
+      <StatCell value={player.total_rec_yards} />
+
+      {/* Pass Yds — QB only meaningful */}
+      <StatCell value={player.total_pass_yards} />
+
+      {/* TDs */}
+      <StatCell value={player.total_tds} />
 
       {/* Compare */}
       <td style={{ padding: '0 8px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
@@ -183,8 +209,17 @@ export default function PlayerListView({ onSelectPlayer }) {
   const [position, setPosition] = useState('ALL');
   const [search,   setSearch]   = useState('');
   const [sort,     setSort]     = useState({ col: 'overall_rank', dir: 'asc' });
+  const [writeupIds, setWriteupIds] = useState(new Set());
 
   const { players, loading } = usePlayerList(position);
+
+  // Fetch list of player IDs that have TFH writeups
+  useEffect(() => {
+    fetch(`${BASE}/tfh/has-outlook`)
+      .then(r => r.ok ? r.json() : [])
+      .then(ids => setWriteupIds(new Set(ids)))
+      .catch(() => {});
+  }, []);
 
   function handleSort(col) {
     setSort(s => s.col === col
@@ -205,7 +240,6 @@ export default function PlayerListView({ onSelectPlayer }) {
     return [...list].sort((a, b) => {
       const aVal = a[sort.col];
       const bVal = b[sort.col];
-      // Nulls always at the bottom regardless of sort direction
       if (aVal == null && bVal == null) return 0;
       if (aVal == null) return 1;
       if (bVal == null) return -1;
@@ -257,7 +291,7 @@ export default function PlayerListView({ onSelectPlayer }) {
 
       {/* Table */}
       <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 400 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 640 }}>
           <thead>
             <tr style={{ background: 'var(--fp-navy2)' }}>
               <th scope="col" style={{
@@ -269,8 +303,12 @@ export default function PlayerListView({ onSelectPlayer }) {
               }}>
                 Player
               </th>
-              <ColHeader label="OVR Rank" col="overall_rank"   sort={sort} onSort={handleSort} width={90}  />
-              <ColHeader label="Avg Pts"  col="season_avg_pts" sort={sort} onSort={handleSort} width={80}  />
+              <ColHeader label="OVR"       col="overall_rank"    sort={sort} onSort={handleSort} width={70}  />
+              <ColHeader label="Avg Pts"   col="season_avg_pts"  sort={sort} onSort={handleSort} width={80}  />
+              <ColHeader label="Rush Yds"  col="total_rush_yards" sort={sort} onSort={handleSort} width={85} />
+              <ColHeader label="Rec Yds"   col="total_rec_yards"  sort={sort} onSort={handleSort} width={85} />
+              <ColHeader label="Pass Yds"  col="total_pass_yards" sort={sort} onSort={handleSort} width={85} />
+              <ColHeader label="TDs"       col="total_tds"        sort={sort} onSort={handleSort} width={60} />
               <th scope="col" style={{ width: 100, borderBottom: '1px solid var(--fp-border)' }} />
             </tr>
           </thead>
@@ -278,7 +316,7 @@ export default function PlayerListView({ onSelectPlayer }) {
             {loading && (
               [...Array(8)].map((_, i) => (
                 <tr key={i}>
-                  {[...Array(4)].map((_, j) => (
+                  {[...Array(8)].map((_, j) => (
                     <td key={j} style={{ padding: '10px 12px' }}>
                       <div style={{
                         height: 16, borderRadius: 4, background: 'var(--fp-navy3)',
@@ -296,12 +334,13 @@ export default function PlayerListView({ onSelectPlayer }) {
                 player={player}
                 idx={idx}
                 onSelect={() => onSelectPlayer(player.id)}
+                hasWriteup={writeupIds.has(player.id)}
               />
             ))}
 
             {!loading && filtered.length === 0 && (
               <tr>
-                <td colSpan={4} style={{ textAlign: 'center', padding: '40px 0', color: 'var(--fp-muted)', fontSize: 13 }}>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '40px 0', color: 'var(--fp-muted)', fontSize: 13 }}>
                   No players found
                 </td>
               </tr>
