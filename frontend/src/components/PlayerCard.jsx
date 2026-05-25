@@ -192,7 +192,7 @@ export default function PlayerCard({ data, initialTab }) {
         minHeight:    148,
       }}>
         {/* Portrait image panel */}
-        <div style={{ position: 'relative', flexShrink: 0, width: 150 }}>
+        <div className="fp-bento-portrait" style={{ position: 'relative', flexShrink: 0, width: 150 }}>
           {player?.headshot_url ? (
             <img
               src={player.headshot_url}

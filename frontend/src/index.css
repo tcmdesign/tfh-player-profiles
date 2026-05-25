@@ -25,6 +25,11 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body, #root {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   background: #080809;
   min-height: 100vh;
@@ -577,4 +582,10 @@ a:hover { text-decoration: underline; }
 /* Landing page padding on mobile */
 @media (max-width: 600px) {
   .fp-root { padding: 0.75rem !important; }
+}
+
+/* ── Player card bento header ── */
+@media (max-width: 480px) {
+  .fp-bento-portrait { width: 100px !important; }
+  .fp-compare-btn-text { display: none; }
 }
