@@ -119,7 +119,7 @@ function EfficiencyPanel({ efficiency, position, loading }) {
   const isQB       = position === 'QB';
 
   return (
-    <div style={{ display: 'flex', gap: 16 }}>
+    <div className="fp-efficiency-row">
       {/* Left col: efficiency */}
       <div style={{ flex: 1 }}>
         <SectionLabel>Efficiency</SectionLabel>

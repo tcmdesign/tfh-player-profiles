@@ -82,12 +82,7 @@ export default function MetricGrid({ player, rankings, stats, weekCount, filterL
   ];
 
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(5, 1fr)',
-      gap: '10px',
-      marginBottom: '0',
-    }}>
+    <div className="fp-metric-grid" style={{ marginBottom: 0 }}>
       {metrics.map((m, i) => (
         <div key={i} className="fp-metric" style={{ padding: '14px 16px' }}>
           <div className="fp-metric-label">{m.label}</div>

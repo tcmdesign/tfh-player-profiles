@@ -517,3 +517,64 @@ a:hover { text-decoration: underline; }
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* ── Responsive layout helpers ── */
+
+/* MetricGrid: 5-col desktop → 3-col tablet → 2-col mobile */
+.fp-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+@media (max-width: 860px) {
+  .fp-metric-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 540px) {
+  .fp-metric-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* TabBanner: 3-col → 1-col on mobile */
+.fp-tab-banner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+@media (max-width: 540px) {
+  .fp-tab-banner-grid { grid-template-columns: 1fr; }
+}
+
+/* Analytics efficiency row: side-by-side → stacked */
+.fp-efficiency-row {
+  display: flex;
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .fp-efficiency-row { flex-direction: column; }
+}
+
+/* Player list: hide lower-priority columns on small screens */
+@media (max-width: 600px) {
+  .fp-col-hide-mobile { display: none !important; }
+}
+
+/* Player card header: shrink name/avatar on mobile */
+@media (max-width: 480px) {
+  .fp-player-name { font-size: 26px !important; }
+  .fp-avatar { width: 56px !important; height: 56px !important; font-size: 18px !important; }
+}
+
+/* Compare page: min-width so cards don't shrink below readable size */
+@media (max-width: 600px) {
+  .fp-compare-card { min-width: 260px; }
+}
+
+/* Overview tab: chart+stats stack on mobile (already handled by fp-chart-stats-row) */
+@media (max-width: 640px) {
+  .fp-chart-stats-row { flex-direction: column !important; }
+  .fp-chart-stats-row > div { flex: unset !important; width: 100% !important; }
+}
+
+/* Landing page padding on mobile */
+@media (max-width: 600px) {
+  .fp-root { padding: 0.75rem !important; }
+}

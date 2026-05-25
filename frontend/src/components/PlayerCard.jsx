@@ -70,7 +70,7 @@ function TabBanner({ activeTab, player, rankings, stats, analyticsData, analytic
   const pos = player?.position || '';
 
   const wrap = children => (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+    <div className="fp-tab-banner-grid">
       {children}
     </div>
   );

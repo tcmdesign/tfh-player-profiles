@@ -124,7 +124,7 @@ export default function ComparePage() {
   const slots = [...list, ...Array(Math.max(0, 2 - list.length)).fill(null)];
 
   return (
-    <div style={{ minHeight: '100vh', padding: '2rem' }}>
+    <div className="fp-root" style={{ minHeight: '100vh' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div>
