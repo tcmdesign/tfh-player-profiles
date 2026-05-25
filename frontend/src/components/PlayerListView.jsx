@@ -89,6 +89,26 @@ function WriteupIcon() {
   );
 }
 
+function HandcuffBadge() {
+  return (
+    <span title="Handcuff player" style={{
+      display: 'inline-flex', alignItems: 'center',
+      marginLeft: 6, flexShrink: 0,
+      padding: '1px 6px',
+      borderRadius: 4,
+      background: 'rgba(41,140,220,0.12)',
+      border: '1px solid rgba(41,140,220,0.4)',
+      fontSize: 9, fontWeight: 700,
+      fontFamily: "'Barlow Condensed', sans-serif",
+      letterSpacing: '0.5px',
+      color: '#4DA6E8',
+      textTransform: 'uppercase',
+    }}>
+      Handcuff
+    </span>
+  );
+}
+
 const STAT_NUM = {
   fontFamily: "'Barlow Condensed', sans-serif",
   fontSize: 14, fontWeight: 400, color: 'var(--fp-text)',
@@ -105,7 +125,7 @@ function StatCell({ value, dash = true }) {
   );
 }
 
-function PlayerRow({ player, idx, onSelect, hasWriteup }) {
+function PlayerRow({ player, idx, onSelect, hasWriteup, isHandcuff }) {
   const [hovered, setHovered] = useState(false);
   const { add, remove, isComparing } = useCompare();
   const comparing = isComparing(player.id);
@@ -146,6 +166,7 @@ function PlayerRow({ player, idx, onSelect, hasWriteup }) {
                 {player.name}
               </span>
               {hasWriteup && <WriteupIcon />}
+              {isHandcuff && <HandcuffBadge />}
             </div>
             <div style={{ fontSize: 11, color: 'var(--fp-muted)' }}>
               {player.position} · {player.team}
@@ -215,15 +236,20 @@ export default function PlayerListView({ onSelectPlayer }) {
   const [position, setPosition] = useState('ALL');
   const [search,   setSearch]   = useState('');
   const [sort,     setSort]     = useState({ col: 'overall_rank', dir: 'asc' });
-  const [writeupIds, setWriteupIds] = useState(new Set());
+  const [writeupIds,   setWriteupIds]   = useState(new Set());
+  const [handcuffIds,  setHandcuffIds]  = useState(new Set());
 
   const { players, loading } = usePlayerList(position);
 
-  // Fetch list of player IDs that have TFH writeups
+  // Fetch list of player IDs that have TFH writeups / are handcuffs
   useEffect(() => {
     fetch(`${BASE}/tfh/has-outlook`)
       .then(r => r.ok ? r.json() : [])
       .then(ids => setWriteupIds(new Set(ids)))
+      .catch(() => {});
+    fetch(`${BASE}/tfh/has-handcuff`)
+      .then(r => r.ok ? r.json() : [])
+      .then(ids => setHandcuffIds(new Set(ids)))
       .catch(() => {});
   }, []);
 
@@ -364,6 +390,7 @@ export default function PlayerListView({ onSelectPlayer }) {
                 idx={idx}
                 onSelect={() => onSelectPlayer(player.id)}
                 hasWriteup={writeupIds.has(player.id)}
+                isHandcuff={handcuffIds.has(player.id)}
               />
             ))}
 

@@ -15,7 +15,9 @@ import MomentumBadge from './MomentumBadge';
 import AnalyticsTab from './AnalyticsTab';
 import AdpTab from './AdpTab';
 import TfhOutlook from './TfhOutlook';
+import HandcuffSection from './HandcuffSection';
 import { useTfhOutlook } from '../hooks/useTfhOutlook';
+import { useTfhHandcuff } from '../hooks/useTfhHandcuff';
 
 const TABS = ['Overview', 'Analytics', 'Depth Chart', 'ADP Tracker'];
 
@@ -152,6 +154,7 @@ export default function PlayerCard({ data, initialTab }) {
   const { data: statRanks, loading: statRanksLoading } = useStatRanks(playerId, statRankSeason);
   const { data: analyticsData, loading: analyticsLoading } = useAnalytics(playerId);
   const { data: outlookData, loading: outlookLoading } = useTfhOutlook(playerId);
+  const { data: handcuffData, loading: handcuffLoading } = useTfhHandcuff(playerId);
 
   if (!data) return null;
 
@@ -380,6 +383,7 @@ export default function PlayerCard({ data, initialTab }) {
         {activeTab === 'Overview' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <TfhOutlook data={outlookData} loading={outlookLoading} />
+            <HandcuffSection data={handcuffData} loading={handcuffLoading} />
 
             <StatsFilter activePill={activePill} onPill={setActivePill} />
 
