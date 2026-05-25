@@ -34,7 +34,7 @@ export default function MetricGrid({ player, rankings, stats, weekCount, filterL
   const posRankDir = !posRankNum ? 'neu' : posRankNum <= 12 ? 'up' : posRankNum > 24 ? 'down' : 'neu';
 
   // OVR rank
-  const ovrNum = rankings?.overall;
+  const ovrNum = rankings?.overall_rank;
   const ovrStr = ovrNum ? `#${ovrNum}` : 'NR';
   const ovrDir = !ovrNum ? 'neu' : ovrNum <= 24 ? 'up' : ovrNum <= 100 ? 'neu' : 'down';
 
