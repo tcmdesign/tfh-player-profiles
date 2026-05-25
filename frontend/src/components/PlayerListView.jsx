@@ -165,7 +165,6 @@ function PlayerRow({ player, idx, onSelect, hasWriteup }) {
       {/* Avg Pts (2025) */}
       <td style={{ padding: '0 12px', textAlign: 'right' }}>
         <span style={STAT_NUM}>{player.season_avg_pts ?? '—'}</span>
-        <div style={{ fontSize: 10, color: 'var(--fp-muted)' }}>2025</div>
       </td>
 
       {/* Rush Yds — RB only meaningful, show for all */}
@@ -311,7 +310,7 @@ export default function PlayerListView({ onSelectPlayer }) {
                 Player
               </th>
               <ColHeader label="OVR"       col="overall_rank"    sort={sort} onSort={handleSort} width={70}  />
-              <ColHeader label="Avg Pts"   col="season_avg_pts"  sort={sort} onSort={handleSort} width={80}  />
+              <ColHeader label="Avg Pts '25" col="season_avg_pts"  sort={sort} onSort={handleSort} width={90}  />
               <ColHeader label="Rush Yds"  col="total_rush_yards" sort={sort} onSort={handleSort} width={85} />
               <ColHeader label="Rec Yds"   col="total_rec_yards"  sort={sort} onSort={handleSort} width={85} />
               <ColHeader label="Pass Yds"  col="total_pass_yards" sort={sort} onSort={handleSort} width={85} />
