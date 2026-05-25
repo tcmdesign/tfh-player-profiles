@@ -299,6 +299,29 @@ export default function PlayerListView({ onSelectPlayer }) {
       <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 640 }}>
           <thead>
+            {/* Section label row */}
+            <tr style={{ background: 'var(--fp-navy2)' }}>
+              <th colSpan={2} style={{ padding: 0, borderBottom: 'none' }} />
+              <th
+                colSpan={5}
+                style={{
+                  padding: '5px 12px 4px',
+                  textAlign: 'left',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: '0.8px',
+                  textTransform: 'uppercase',
+                  color: '#5BB8D4',
+                  borderBottom: 'none',
+                  borderTop: '2px solid #5BB8D4',
+                  background: 'rgba(91,184,212,0.06)',
+                }}
+              >
+                2025 Season
+              </th>
+              <th style={{ padding: 0, borderBottom: 'none', background: 'var(--fp-navy2)' }} />
+            </tr>
+            {/* Column headers */}
             <tr style={{ background: 'var(--fp-navy2)' }}>
               <th scope="col" style={{
                 textAlign: 'left', padding: '10px 12px',
@@ -309,12 +332,12 @@ export default function PlayerListView({ onSelectPlayer }) {
               }}>
                 Player
               </th>
-              <ColHeader label="OVR"       col="overall_rank"    sort={sort} onSort={handleSort} width={70}  />
-              <ColHeader label="Avg Pts '25" col="season_avg_pts"  sort={sort} onSort={handleSort} width={90}  />
-              <ColHeader label="Rush Yds"  col="total_rush_yards" sort={sort} onSort={handleSort} width={85} />
-              <ColHeader label="Rec Yds"   col="total_rec_yards"  sort={sort} onSort={handleSort} width={85} />
-              <ColHeader label="Pass Yds"  col="total_pass_yards" sort={sort} onSort={handleSort} width={85} />
-              <ColHeader label="TDs"       col="total_tds"        sort={sort} onSort={handleSort} width={60} />
+              <ColHeader label="OVR"      col="overall_rank"    sort={sort} onSort={handleSort} width={70}  />
+              <ColHeader label="Avg Pts"  col="season_avg_pts"  sort={sort} onSort={handleSort} width={90}  />
+              <ColHeader label="Rush Yds" col="total_rush_yards" sort={sort} onSort={handleSort} width={85} />
+              <ColHeader label="Rec Yds"  col="total_rec_yards"  sort={sort} onSort={handleSort} width={85} />
+              <ColHeader label="Pass Yds" col="total_pass_yards" sort={sort} onSort={handleSort} width={85} />
+              <ColHeader label="TDs"      col="total_tds"        sort={sort} onSort={handleSort} width={60} />
               <th scope="col" style={{ width: 100, borderBottom: '1px solid var(--fp-border)' }} />
             </tr>
           </thead>
