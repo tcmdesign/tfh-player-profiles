@@ -236,20 +236,8 @@ export default function PlayerCard({ data, initialTab }) {
             <div className="fp-player-meta">
               <span className="fp-badge fp-badge-pos">{posBadge}</span>
               <span className="fp-badge fp-badge-team">{teamBadge}</span>
-              <MomentumBadge momentum={analyticsData?.momentum} loading={analyticsLoading} />
-              {(() => {
-                const inj = getInjuryDisplay(player?.status, player?.injury_status);
-                if (!inj) return null;
-                return (
-                  <span className="fp-badge" style={{
-                    background: inj.bg, color: inj.color,
-                    border: `1px solid ${inj.color}50`,
-                    fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 11,
-                  }}>
-                    {inj.badge}
-                  </span>
-                );
-              })()}
+              {/* MomentumBadge hidden for now */}
+              {/* Injury badge hidden for now */}
             </div>
             {ageLine && (
               <div style={{ fontSize: 13, color: 'var(--fp-muted)', marginTop: 6, letterSpacing: '0.3px' }}>

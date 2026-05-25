@@ -124,7 +124,7 @@ function PlayerRow({ player, idx, onSelect }) {
               }}>
                 {player.name}
               </span>
-              <InjuryBadge status={player.status} injuryStatus={player.injury_status} />
+              {/* InjuryBadge hidden for now */}
             </div>
             <div style={{ fontSize: 11, color: 'var(--fp-muted)' }}>
               {player.position} · {player.team}
