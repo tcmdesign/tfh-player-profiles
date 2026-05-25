@@ -66,7 +66,7 @@ function BannerBox({ label, value, sub, color = 'var(--fp-text)', accent }) {
   );
 }
 
-function TabBanner({ activeTab, player, rankings, stats, analyticsData, analyticsLoading }) {
+function TabBanner({ activeTab, player, rankings, stats, analyticsData, analyticsLoading, selfTeamRank }) {
   const pos = player?.position || '';
 
   const wrap = children => (
@@ -78,36 +78,45 @@ function TabBanner({ activeTab, player, rankings, stats, analyticsData, analytic
   if (activeTab === 'Analytics') return null;
 
   if (activeTab === 'Depth Chart') {
-    const recent = stats?.recent || [];
-    const sorted = [...recent].sort((a, b) => {
-      if (b.season !== a.season) return b.season - a.season;
-      return (b.week || 0) - (a.week || 0);
-    });
-    const lastGame = sorted[0];
-    const snapRaw  = lastGame?.snap_pct != null ? parseFloat(lastGame.snap_pct) : null;
-    const snapNorm = snapRaw != null ? (snapRaw > 1.5 ? snapRaw : snapRaw * 100) : null;
-    const snapDisp = snapNorm != null ? `${Math.round(snapNorm)}%` : '--';
-    const snapColor = snapNorm == null ? 'var(--fp-muted)' : snapNorm >= 70 ? 'var(--fp-green)' : snapNorm >= 40 ? 'var(--fp-text)' : 'var(--fp-pink)';
-    const last4 = sorted.slice(0, 4);
+    const recent   = stats?.recent || [];
+    const games25  = recent.filter(w => parseInt(w.season) === 2025);
+
+    // Team role from actual depth chart rank
+    const teamRank  = selfTeamRank ? parseInt(selfTeamRank) : null;
+    const roleLabel = teamRank ? `${pos}${teamRank}` : (pos || '--');
+    const roleColor = teamRank === 1 ? 'var(--fp-green)' : teamRank === 2 ? 'var(--fp-cyan)' : 'var(--fp-muted)';
+
+    // 2025 avg snap %
+    const snapGames = games25.filter(w => w.snap_pct != null);
+    let snapDisp = '--', snapColor = 'var(--fp-muted)';
+    if (snapGames.length) {
+      const avg = snapGames.reduce((s, w) => {
+        const v = parseFloat(w.snap_pct);
+        return s + (v > 1.5 ? v : v * 100);
+      }, 0) / snapGames.length;
+      snapDisp  = `${Math.round(avg)}%`;
+      snapColor = avg >= 70 ? 'var(--fp-green)' : avg >= 40 ? 'var(--fp-text)' : 'var(--fp-pink)';
+    }
+
+    // 2025 season avg volume
     let volLabel, volValue;
     if (['WR', 'TE'].includes(pos)) {
-      volLabel = 'AVG TARGETS L4';
-      volValue = last4.length ? (last4.reduce((s, w) => s + (parseFloat(w.targets) || 0), 0) / last4.length).toFixed(1) : '--';
+      volLabel = 'AVG TARGETS \'25';
+      volValue = games25.length ? (games25.reduce((s, w) => s + (parseFloat(w.targets) || 0), 0) / games25.length).toFixed(1) : '--';
     } else if (pos === 'RB') {
-      volLabel = 'AVG CARRIES L4';
-      volValue = last4.length ? (last4.reduce((s, w) => s + (parseFloat(w.carries) || 0), 0) / last4.length).toFixed(1) : '--';
+      volLabel = 'AVG CARRIES \'25';
+      volValue = games25.length ? (games25.reduce((s, w) => s + (parseFloat(w.carries) || 0), 0) / games25.length).toFixed(1) : '--';
     } else if (pos === 'QB') {
-      volLabel = 'PASS YDS/G L4';
-      volValue = last4.length ? (last4.reduce((s, w) => s + (parseFloat(w.pass_yards) || 0), 0) / last4.length).toFixed(0) : '--';
+      volLabel = 'PASS YDS/G \'25';
+      volValue = games25.length ? (games25.reduce((s, w) => s + (parseFloat(w.pass_yards) || 0), 0) / games25.length).toFixed(0) : '--';
     } else {
       volLabel = 'POSITION'; volValue = pos || '--';
     }
-    const posRankNum = rankings?.position_rank;
-    const roleLabel  = posRankNum ? `${pos}${posRankNum}` : (pos || '--');
+
     return wrap(<>
-      <BannerBox label="TEAM ROLE" value={roleLabel} sub={`${player?.team || 'FA'} depth chart`} color="var(--fp-cyan)" accent="var(--fp-cyan)" />
-      <BannerBox label="SNAP RATE" value={snapDisp} sub={lastGame?.opponent ? `last vs ${lastGame.opponent}` : 'last game'} color={snapColor} />
-      <BannerBox label={volLabel} value={volValue} sub="last 4 weeks avg" />
+      <BannerBox label="TEAM ROLE" value={roleLabel} sub={`${player?.team || 'FA'} depth chart`} color={roleColor} accent={roleColor} />
+      <BannerBox label="AVG SNAP % \'25" value={snapDisp} sub={`${games25.length} games`} color={snapColor} />
+      <BannerBox label={volLabel} value={volValue} sub="2025 season avg" />
     </>);
   }
 
@@ -133,6 +142,7 @@ export default function PlayerCard({ data, initialTab }) {
 
   const playerId = data?.player?.id;
   const { data: teammateData, loading: depthLoading } = useTeammates(playerId);
+  const selfTeamRank = teammateData?.teammates?.find(t => t.id === (teammateData?.selfId || playerId))?.team_rank ?? null;
   const leaderboard = usePositionLeaderboard(data?.player?.position);
   const { stats: filteredStats, loading: statsLoading } = useFilteredStats(
     playerId, activePill, 8, data?.stats?.recent || []
@@ -355,6 +365,7 @@ export default function PlayerCard({ data, initialTab }) {
             stats={stats}
             analyticsData={analyticsData}
             analyticsLoading={analyticsLoading}
+            selfTeamRank={selfTeamRank}
           />
         )}
       </div>
