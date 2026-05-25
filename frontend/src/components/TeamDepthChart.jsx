@@ -3,16 +3,11 @@ import { useNavigate } from 'react-router-dom';
 const POS_ORDER  = ['QB', 'RB', 'WR', 'TE'];
 const POS_LABELS = { QB: 'Quarterback', RB: 'Running Back', WR: 'Wide Receiver', TE: 'Tight End' };
 
-function designation(posRank, teamRank) {
-  if (posRank) {
-    if (posRank <= 12) return { label: 'START',  color: 'var(--fp-green)' };
-    if (posRank <= 24) return { label: 'FRINGE', color: 'var(--fp-cyan)'  };
-    return                    { label: 'SIT',    color: 'var(--fp-pink)'  };
-  }
-  const r = parseInt(teamRank);
-  if (r === 1) return { label: 'START',  color: 'var(--fp-green)' };
-  if (r === 2) return { label: 'FRINGE', color: 'var(--fp-cyan)'  };
-  return               { label: 'SIT',   color: 'var(--fp-pink)'  };
+function ovrColor(rank) {
+  if (!rank) return 'var(--fp-muted)';
+  if (rank <= 24)  return 'var(--fp-green)';
+  if (rank <= 100) return 'var(--fp-text)';
+  return 'var(--fp-muted)';
 }
 
 function getInitials(name) {
@@ -23,12 +18,13 @@ function getInitials(name) {
 }
 
 function PlayerRow({ player, isSelf, onClick }) {
-  const teamRank = parseInt(player.team_rank) || 4;
-  const posRank  = player.position_rank;
-  const { label, color } = designation(posRank, teamRank);
+  const teamRank   = parseInt(player.team_rank) || 4;
+  const ovrRank    = player.overall_rank;
+  const color      = ovrColor(ovrRank);
+  const rankLabel  = ovrRank ? `#${ovrRank}` : 'NR';
 
-  const barPct = posRank
-    ? Math.max(4, Math.round((1 - (posRank - 1) / 24) * 100))
+  const barPct = ovrRank
+    ? Math.max(4, Math.round((1 - Math.min(ovrRank - 1, 249) / 249) * 100))
     : Math.max(4, Math.round((1 - (teamRank - 1) / 4) * 100));
 
   const avgPts = player.avg_pts ? parseFloat(player.avg_pts).toFixed(1) : null;
@@ -125,18 +121,18 @@ function PlayerRow({ player, isSelf, onClick }) {
         </div>
       )}
 
-      {/* Designation */}
+      {/* OVR Rank */}
       <div style={{
         fontFamily:    "'Barlow Condensed', sans-serif",
-        fontSize:      '12px',
+        fontSize:      '13px',
         fontWeight:    800,
         color,
         letterSpacing: '0.5px',
-        minWidth:      '46px',
+        minWidth:      '40px',
         textAlign:     'right',
         flexShrink:    0,
       }}>
-        {posRank ? `#${posRank}` : label}
+        {rankLabel}
       </div>
     </div>
   );
