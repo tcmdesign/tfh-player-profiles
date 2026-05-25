@@ -151,7 +151,8 @@ export default function PlayerCard({ data, initialTab }) {
     playerId, activePill, 8, data?.stats?.recent || []
   );
   const filteredMetrics = computeMetrics(filteredStats);
-  const { data: statRanks, loading: statRanksLoading } = useStatRanks(playerId, 2025);
+  const statRankSeason = activePill === 'career' ? null : activePill === 's2024' ? 2024 : 2025;
+  const { data: statRanks, loading: statRanksLoading } = useStatRanks(playerId, statRankSeason);
   const { data: analyticsData, loading: analyticsLoading } = useAnalytics(playerId);
   const { data: outlookData, loading: outlookLoading } = useTfhOutlook(playerId);
 
@@ -414,6 +415,7 @@ export default function PlayerCard({ data, initialTab }) {
                   position={player?.position}
                   loading={statRanksLoading}
                   columns={2}
+                  season={statRankSeason}
                 />
               </div>
             </div>

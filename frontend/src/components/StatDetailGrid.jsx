@@ -28,7 +28,7 @@ const POS_STATS = {
   ],
 };
 
-export default function StatDetailGrid({ ranks, position, loading, columns }) {
+export default function StatDetailGrid({ ranks, position, loading, columns, season }) {
   const statDefs = POS_STATS[position] || POS_STATS.WR;
 
   if (loading) {
@@ -47,7 +47,7 @@ export default function StatDetailGrid({ ranks, position, loading, columns }) {
         fontSize: '10px', fontWeight: 600, color: 'var(--fp-muted)',
         letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px',
       }}>
-        Season Stats &amp; Rankings
+        {season ? `${season} Stats & Rankings` : 'Career Stats & Rankings'}
       </div>
       <div style={{
         display: 'grid',
