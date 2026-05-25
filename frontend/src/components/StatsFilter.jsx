@@ -4,34 +4,13 @@ const SEASON_FILTERS = [
   { key: 'career', label: 'Career' },
 ];
 
-const stepBtn = {
-  fontFamily: "'Barlow Condensed', sans-serif",
-  fontSize: '16px',
-  fontWeight: 700,
-  width: '26px',
-  height: '26px',
-  borderRadius: '6px',
-  border: '1px solid var(--fp-border)',
-  background: 'var(--fp-navy3)',
-  color: 'var(--fp-steel)',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  lineHeight: 1,
-  flexShrink: 0,
-};
-
-export default function StatsFilter({ sliderValue, sliderMax, onSlider, activePill, onPill }) {
-  const isSliderActive = !activePill;
-
+export default function StatsFilter({ activePill, onPill }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-      {/* Season pills */}
       {SEASON_FILTERS.map(f => (
         <button
           key={f.key}
-          onClick={() => onPill(f.key)}
+          onClick={() => onPill(activePill === f.key ? null : f.key)}
           style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontSize: '12px',
@@ -55,54 +34,6 @@ export default function StatsFilter({ sliderValue, sliderMax, onSlider, activePi
           {f.label}
         </button>
       ))}
-
-      {/* Divider */}
-      <div style={{ width: '1px', height: '20px', background: 'var(--fp-border)', flexShrink: 0 }} />
-
-      {/* Compact week stepper */}
-      <div
-        style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'default' }}
-        onClick={() => { if (activePill) onPill(null); }}
-      >
-        <span style={{
-          fontSize: '11px',
-          color: isSliderActive ? 'var(--fp-steel)' : 'var(--fp-muted)',
-          letterSpacing: '0.3px',
-          transition: 'color 0.15s',
-          whiteSpace: 'nowrap',
-        }}>
-          Last
-        </span>
-        <button
-          style={stepBtn}
-          onClick={e => { e.stopPropagation(); onPill(null); onSlider(Math.max(1, sliderValue - 1)); }}
-        >−</button>
-        <span style={{
-          fontFamily: "'Barlow Condensed', sans-serif",
-          fontSize: '18px',
-          fontWeight: 800,
-          color: isSliderActive ? 'var(--fp-cyan)' : 'var(--fp-muted)',
-          minWidth: '24px',
-          textAlign: 'center',
-          lineHeight: 1,
-          transition: 'color 0.15s',
-        }}>
-          {sliderValue}
-        </span>
-        <button
-          style={stepBtn}
-          onClick={e => { e.stopPropagation(); onPill(null); onSlider(Math.min(sliderMax, sliderValue + 1)); }}
-        >+</button>
-        <span style={{
-          fontSize: '11px',
-          color: isSliderActive ? 'var(--fp-steel)' : 'var(--fp-muted)',
-          letterSpacing: '0.3px',
-          transition: 'color 0.15s',
-          whiteSpace: 'nowrap',
-        }}>
-          wks
-        </span>
-      </div>
     </div>
   );
 }

@@ -141,15 +141,14 @@ function TabBanner({ activeTab, player, rankings, stats, analyticsData, analytic
 
 export default function PlayerCard({ data, initialTab }) {
   const [activeTab,  setActiveTab]  = useState(initialTab || 'Overview');
-  const [sliderN,    setSliderN]    = useState(8);
-  const [activePill, setActivePill] = useState(null);
+  const [activePill, setActivePill] = useState('s2025');
   const { add, remove, isComparing } = useCompare();
 
   const playerId = data?.player?.id;
   const { data: teammateData, loading: depthLoading } = useTeammates(playerId);
   const leaderboard = usePositionLeaderboard(data?.player?.position);
   const { stats: filteredStats, loading: statsLoading } = useFilteredStats(
-    playerId, activePill, sliderN, data?.stats?.recent || []
+    playerId, activePill, 8, data?.stats?.recent || []
   );
   const filteredMetrics = computeMetrics(filteredStats);
   const { data: statRanks, loading: statRanksLoading } = useStatRanks(playerId, 2025);
@@ -160,8 +159,7 @@ export default function PlayerCard({ data, initialTab }) {
 
   const { player, rankings, stats } = data;
 
-  const sliderMax = 17;
-  const initials  = getInitials(player?.name);
+  const initials = getInitials(player?.name);
 
   const posBadge = player?.position
     ? `${player.position}${rankings?.position_rank || ''}`
@@ -369,7 +367,7 @@ export default function PlayerCard({ data, initialTab }) {
             rankings={rankings}
             stats={{ ...stats, recent: filteredStats, avg_fantasy_pts: filteredMetrics.avg }}
             weekCount={filteredMetrics.count}
-            filterLabel={activePill ? ({ s2025: '2025', s2024: '2024', career: 'Career' }[activePill] ?? activePill) : `Last ${filteredMetrics.count} wks`}
+            filterLabel={{ s2025: '2025', s2024: '2024', career: 'Career' }[activePill] ?? '2025'}
             loading={statsLoading}
             leaderboard={leaderboard}
           />
@@ -396,13 +394,7 @@ export default function PlayerCard({ data, initialTab }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <TfhOutlook data={outlookData} loading={outlookLoading} />
 
-            <StatsFilter
-              sliderValue={sliderN}
-              sliderMax={sliderMax}
-              onSlider={n => { setSliderN(n); setActivePill(null); }}
-              activePill={activePill}
-              onPill={setActivePill}
-            />
+            <StatsFilter activePill={activePill} onPill={setActivePill} />
 
             <div className="fp-chart-stats-row" style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
               <div style={{ flex: '0 0 65%', minWidth: 0 }}>
