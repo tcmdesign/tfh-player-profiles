@@ -69,15 +69,22 @@ function WriteupIcon() {
     <span title="TFH Outlook available" style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       marginLeft: 6, flexShrink: 0,
-      width: 16, height: 16,
-      borderRadius: '50%',
-      background: 'rgba(229,57,53,0.15)',
-      border: '1px solid rgba(229,57,53,0.4)',
-      boxShadow: '0 0 6px rgba(229,57,53,0.5)',
-      color: '#E53935',
-      fontSize: 9,
+      width: 18, height: 18,
+      borderRadius: 5,
+      background: 'rgba(229,57,53,0.12)',
+      border: '1px solid rgba(229,57,53,0.45)',
+      boxShadow: '0 0 7px rgba(229,57,53,0.55)',
     }}>
-      ✎
+      <svg width="11" height="11" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M2 1.5C2 1.22386 2.22386 1 2.5 1H8.5L12 4.5V12.5C12 12.7761 11.7761 13 11.5 13H2.5C2.22386 13 2 12.7761 2 12.5V1.5Z"
+          stroke="#E53935" strokeWidth="1.2" fill="none"
+        />
+        <path d="M8.5 1L12 4.5H8.5V1Z" stroke="#E53935" strokeWidth="1.2" strokeLinejoin="round" fill="none" />
+        <line x1="4.5" y1="7" x2="9.5" y2="7" stroke="#E53935" strokeWidth="1.1" strokeLinecap="round" />
+        <line x1="4.5" y1="9" x2="9.5" y2="9" stroke="#E53935" strokeWidth="1.1" strokeLinecap="round" />
+        <line x1="4.5" y1="11" x2="7.5" y2="11" stroke="#E53935" strokeWidth="1.1" strokeLinecap="round" />
+      </svg>
     </span>
   );
 }
