@@ -1,7 +1,6 @@
 import BoomBustChart        from './BoomBustChart';
 import VolumeTrendChart      from './VolumeTrendChart';
 import TargetDistribution    from './TargetDistribution';
-import NgsPanel              from './NgsPanel';
 
 function SectionLabel({ children }) {
   return (
@@ -203,9 +202,7 @@ export default function AnalyticsTab({ playerId, position, analyticsData, schedu
       {/* Season label */}
       <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--fp-muted)', letterSpacing: '0.8px', textTransform: 'uppercase', borderBottom: '1px solid var(--fp-border)', paddingBottom: 10 }}>
         2025 Season Data
-        <span style={{ marginLeft: 12, fontWeight: 400, color: '#5BB8D4', letterSpacing: '0.3px', textTransform: 'none', fontSize: 11 }}>
-          · Tracking Stats reflect 2024 (2025 NGS not yet published)
-        </span>
+
       </div>
 
       {/* Efficiency + Usage */}
@@ -237,12 +234,6 @@ export default function AnalyticsTab({ playerId, position, analyticsData, schedu
         </div>
       </div>
 
-      {/* Next Gen Stats — all skill positions */}
-      {(['WR', 'TE', 'RB', 'QB'].includes(position)) && (
-        <div style={{ background: 'var(--fp-navy3)', border: '1px solid var(--fp-border)', borderRadius: 8, padding: '14px 16px' }}>
-          <NgsPanel playerId={playerId} season={2024} />
-        </div>
-      )}
 
       {/* Target Distribution — WR/TE/RB only, from nflfastR PBP data */}
       {(['WR', 'TE', 'RB'].includes(position)) && (
