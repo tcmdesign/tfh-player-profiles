@@ -1,4 +1,6 @@
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BASE } from '../api/client';
 import { useCompare, MAX_COMPARE } from '../context/CompareContext';
 import { usePlayer } from '../hooks/usePlayer';
 import PlayerCompactCard from '../components/PlayerCompactCard';
@@ -7,6 +9,16 @@ const RANK_FIELDS = { WR: 'rank_vs_wr', RB: 'rank_vs_rb', TE: 'rank_vs_te', QB: 
 
 function PlayerColumn({ entry, onRemove }) {
   const { data, loading } = usePlayer(entry.id);
+  const [showWriteup, setShowWriteup] = useState(false);
+  const [outlook, setOutlook] = useState(null);
+
+  useEffect(() => {
+    if (!entry.id) return;
+    fetch(`${BASE}/tfh/outlook/${entry.id}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => setOutlook(d))
+      .catch(() => {});
+  }, [entry.id]);
 
   if (loading) {
     return (
@@ -19,7 +31,7 @@ function PlayerColumn({ entry, onRemove }) {
 
   if (!data) return null;
 
-  const { player, rankings, stats, consistency, matchup } = data;
+  const { player, rankings, stats } = data;
 
   const recentPts  = (stats?.recent || []).map(w => parseFloat(w.fantasy_pts) || 0).filter(p => p > 0);
   const avgPts     = recentPts.length ? recentPts.reduce((a, b) => a + b, 0) / recentPts.length : 0;
@@ -29,8 +41,42 @@ function PlayerColumn({ entry, onRemove }) {
   const avgTargets = recentAll.length ? recentAll.reduce((a, w) => a + (parseFloat(w.targets) || 0), 0) / recentAll.length : 0;
   const avgCarries = recentAll.length ? recentAll.reduce((a, w) => a + (parseFloat(w.carries) || 0), 0) / recentAll.length : 0;
 
-  const rf         = RANK_FIELDS[player?.position] || 'rank_vs_wr';
-  const matchupRank = matchup?.[rf] ?? null;
+  const writeupExtra = (
+    <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--fp-border)' }}>
+      {outlook?.writeup ? (
+        <>
+          <button
+            onClick={() => setShowWriteup(v => !v)}
+            style={{
+              width: '100%', textAlign: 'center',
+              background: showWriteup ? 'rgba(229,57,53,0.12)' : 'transparent',
+              border: '1px solid rgba(229,57,53,0.35)',
+              borderRadius: 6, padding: '7px 0',
+              color: '#E53935', fontSize: 12, fontWeight: 700,
+              fontFamily: "'Barlow Condensed', sans-serif",
+              letterSpacing: '0.4px', cursor: 'pointer',
+            }}
+          >
+            {showWriteup ? 'Hide Outlook' : '2026 TFH Outlook'}
+          </button>
+          {showWriteup && (
+            <div style={{
+              marginTop: 10, fontSize: 12, color: 'var(--fp-text)',
+              lineHeight: 1.6, background: 'var(--fp-navy3)',
+              border: '1px solid var(--fp-border)',
+              borderRadius: 6, padding: '10px 12px',
+            }}>
+              {outlook.writeup}
+            </div>
+          )}
+        </>
+      ) : (
+        <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--fp-muted)', padding: '4px 0' }}>
+          No TFH outlook available
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <PlayerCompactCard
@@ -49,9 +95,8 @@ function PlayerColumn({ entry, onRemove }) {
         ceiling_pts: parseFloat(ceilingPts.toFixed(1)),
         avg_targets: parseFloat(avgTargets.toFixed(1)),
         avg_carries: parseFloat(avgCarries.toFixed(1)),
-        consistency: consistency?.score ?? 0,
       }}
-      matchup={matchup ? { team: matchup.team, rank: matchupRank } : null}
+      extra={writeupExtra}
       onRemove={() => onRemove(entry.id)}
     />
   );

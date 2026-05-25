@@ -210,32 +210,7 @@ export default function PlayerCompactCard({
           <StatBar label="Avg Carries" value={stats?.avg_carries} max={25} color="#29C9F0" format={v => v.toFixed(1)} />
         )}
 
-        <StatBar label="Consistency" value={stats?.consistency} max={100} color="#A78BFA" format={v => `${v}%`} />
 
-        {/* Matchup */}
-        {matchup?.team && (
-          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--fp-border)' }}>
-            <div style={{
-              fontSize: 10, fontWeight: 600, color: 'var(--fp-muted)',
-              letterSpacing: '0.8px', textTransform: 'uppercase',
-              marginBottom: 8, fontFamily: "'Barlow Condensed', sans-serif",
-            }}>
-              Matchup
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 13, color: 'var(--fp-text)', fontWeight: 600, fontFamily: "'Barlow Condensed', sans-serif" }}>
-                vs {matchup.team}
-              </span>
-              <span style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: 14, fontWeight: 800,
-                color: matchup.rank <= 8 ? '#4ADE80' : matchup.rank <= 20 ? '#F59E0B' : '#EF4444',
-              }}>
-                {matchup.rank ? `${ordinal(matchup.rank)} easiest` : '—'}
-              </span>
-            </div>
-          </div>
-        )}
 
         {/* Extra slot — e.g. trade value breakdown chips */}
         {extra}
