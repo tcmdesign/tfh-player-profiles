@@ -29,7 +29,7 @@ export default function SbbSection({ data, loading }) {
             borderRadius: 4, padding: '2px 8px',
             letterSpacing: '0.3px',
           }}>
-            {data.creator}'s Pick
+            {data.creator === 'Both' ? "Jake & Kyle's Pick" : `${data.creator}'s Pick`}
           </span>
         )}
       </div>
