@@ -129,6 +129,33 @@ function ValuePickBadge() {
   );
 }
 
+function SbbBadge({ type }) {
+  const styles = {
+    Sleeper:  { color: '#AA44FF', bg: 'rgba(170,68,255,0.12)', border: 'rgba(170,68,255,0.35)' },
+    Breakout: { color: '#FF4DA6', bg: 'rgba(255,77,166,0.12)', border: 'rgba(255,77,166,0.35)' },
+    Bust:     { color: '#FF6B35', bg: 'rgba(255,107,53,0.12)', border: 'rgba(255,107,53,0.35)' },
+  };
+  const s = styles[type];
+  if (!s) return null;
+  return (
+    <span title={type} style={{
+      display: 'inline-flex', alignItems: 'center',
+      marginLeft: 6, flexShrink: 0,
+      padding: '1px 6px',
+      borderRadius: 4,
+      background: s.bg,
+      border: `1px solid ${s.border}`,
+      fontSize: 9, fontWeight: 700,
+      fontFamily: "'Barlow Condensed', sans-serif",
+      letterSpacing: '0.5px',
+      color: s.color,
+      textTransform: 'uppercase',
+    }}>
+      {type}
+    </span>
+  );
+}
+
 const STAT_NUM = {
   fontFamily: "'Barlow Condensed', sans-serif",
   fontSize: 14, fontWeight: 400, color: 'var(--fp-text)',
@@ -145,7 +172,7 @@ function StatCell({ value, dash = true }) {
   );
 }
 
-function PlayerRow({ player, idx, onSelect, hasWriteup, isHandcuff, isValuePick }) {
+function PlayerRow({ player, idx, onSelect, hasWriteup, isHandcuff, isValuePick, sbbType }) {
   const [hovered, setHovered] = useState(false);
   const { add, remove, isComparing } = useCompare();
   const comparing = isComparing(player.id);
@@ -188,6 +215,7 @@ function PlayerRow({ player, idx, onSelect, hasWriteup, isHandcuff, isValuePick 
               {hasWriteup && <WriteupIcon />}
               {isHandcuff && <HandcuffBadge />}
               {isValuePick && <ValuePickBadge />}
+              {sbbType && <SbbBadge type={sbbType} />}
             </div>
             <div style={{ fontSize: 11, color: 'var(--fp-muted)' }}>
               {player.position} · {player.team}
@@ -260,6 +288,7 @@ export default function PlayerListView({ onSelectPlayer }) {
   const [writeupIds,    setWriteupIds]    = useState(new Set());
   const [handcuffIds,   setHandcuffIds]   = useState(new Set());
   const [valuePickIds,  setValuePickIds]  = useState(new Set());
+  const [sbbMap,         setSbbMap]         = useState(new Map());
 
   const { players, loading } = usePlayerList(position);
 
@@ -276,6 +305,16 @@ export default function PlayerListView({ onSelectPlayer }) {
     fetch(`${BASE}/tfh/has-value-pick`)
       .then(r => r.ok ? r.json() : [])
       .then(ids => setValuePickIds(new Set(ids)))
+      .catch(() => {});
+    fetch(`${BASE}/tfh/has-sbb`)
+      .then(r => r.ok ? r.json() : { sleeper: [], breakout: [], bust: [] })
+      .then(d => {
+        const m = new Map();
+        (d.sleeper  || []).forEach(id => m.set(id, 'Sleeper'));
+        (d.breakout || []).forEach(id => m.set(id, 'Breakout'));
+        (d.bust     || []).forEach(id => m.set(id, 'Bust'));
+        setSbbMap(m);
+      })
       .catch(() => {});
   }, []);
 
@@ -418,6 +457,7 @@ export default function PlayerListView({ onSelectPlayer }) {
                 hasWriteup={writeupIds.has(player.id)}
                 isHandcuff={handcuffIds.has(player.id)}
                 isValuePick={valuePickIds.has(player.id)}
+                sbbType={sbbMap.get(player.id) || null}
               />
             ))}
 

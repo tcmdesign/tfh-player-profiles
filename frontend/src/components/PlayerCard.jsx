@@ -17,9 +17,11 @@ import AdpTab from './AdpTab';
 import TfhOutlook from './TfhOutlook';
 import HandcuffSection from './HandcuffSection';
 import ValuePickSection from './ValuePickSection';
+import SbbSection from './SbbSection';
 import { useTfhOutlook } from '../hooks/useTfhOutlook';
 import { useTfhHandcuff } from '../hooks/useTfhHandcuff';
 import { useTfhValuePick } from '../hooks/useTfhValuePick';
+import { useTfhSbb } from '../hooks/useTfhSbb';
 
 const TABS = ['Overview', 'Analytics', 'Depth Chart', 'ADP Tracker'];
 
@@ -158,6 +160,7 @@ export default function PlayerCard({ data, initialTab }) {
   const { data: outlookData, loading: outlookLoading } = useTfhOutlook(playerId);
   const { data: handcuffData, loading: handcuffLoading } = useTfhHandcuff(playerId);
   const { data: valuePickData, loading: valuePickLoading } = useTfhValuePick(playerId);
+  const { data: sbbData, loading: sbbLoading } = useTfhSbb(playerId);
 
   if (!data) return null;
 
@@ -388,6 +391,7 @@ export default function PlayerCard({ data, initialTab }) {
             <TfhOutlook data={outlookData} loading={outlookLoading} />
             <HandcuffSection data={handcuffData} loading={handcuffLoading} />
             <ValuePickSection data={valuePickData} loading={valuePickLoading} />
+            <SbbSection data={sbbData} loading={sbbLoading} />
 
             <StatsFilter activePill={activePill} onPill={setActivePill} />
 
