@@ -18,12 +18,14 @@ import TfhOutlook from './TfhOutlook';
 import HandcuffSection from './HandcuffSection';
 import ValuePickSection from './ValuePickSection';
 import SbbSection from './SbbSection';
+import InjuryOutlookTab from './InjuryOutlookTab';
 import { useTfhOutlook } from '../hooks/useTfhOutlook';
 import { useTfhHandcuff } from '../hooks/useTfhHandcuff';
 import { useTfhValuePick } from '../hooks/useTfhValuePick';
 import { useTfhSbb } from '../hooks/useTfhSbb';
+import { useTfhInjuryOutlook } from '../hooks/useTfhInjuryOutlook';
 
-const TABS = ['Overview', 'Analytics', 'Depth Chart', 'ADP Tracker'];
+const BASE_TABS = ['Overview', 'Analytics', 'Depth Chart', 'ADP Tracker'];
 
 function getInitials(name) {
   if (!name) return '??';
@@ -160,6 +162,11 @@ export default function PlayerCard({ data, initialTab }) {
   const { data: outlookData, loading: outlookLoading } = useTfhOutlook(playerId);
   const { data: handcuffData, loading: handcuffLoading } = useTfhHandcuff(playerId);
   const { data: valuePickData, loading: valuePickLoading } = useTfhValuePick(playerId);
+  const { data: injuryOutlookData, loading: injuryOutlookLoading } = useTfhInjuryOutlook(playerId);
+
+  const TABS = injuryOutlookData?.analysis
+    ? [...BASE_TABS, 'Injury Outlook']
+    : BASE_TABS;
   const { data: sbbData, loading: sbbLoading } = useTfhSbb(playerId);
 
   if (!data) return null;
@@ -452,6 +459,10 @@ export default function PlayerCard({ data, initialTab }) {
 
         {activeTab === 'ADP Tracker' && (
           <AdpTab playerId={playerId} />
+        )}
+
+        {activeTab === 'Injury Outlook' && (
+          <InjuryOutlookTab data={injuryOutlookData} loading={injuryOutlookLoading} />
         )}
       </div>
 
