@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { usePlayer } from '../hooks/usePlayer';
 import PlayerSearch from '../components/PlayerSearch';
 import PlayerCard from '../components/PlayerCard';
@@ -21,11 +21,25 @@ function LoadingState() {
 export default function LandingPage() {
   const [activePlayerId, setActivePlayerId] = useState(null);
   const { data, loading, error } = usePlayer(activePlayerId);
+  const savedScrollY = useRef(0);
 
   function selectPlayer(id) {
+    savedScrollY.current = window.scrollY;
     setActivePlayerId(id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  function goBackToList() {
+    setActivePlayerId(null);
+  }
+
+  // Restore scroll position when returning to the list
+  useEffect(() => {
+    if (!activePlayerId && savedScrollY.current > 0) {
+      const y = savedScrollY.current;
+      requestAnimationFrame(() => window.scrollTo(0, y));
+    }
+  }, [activePlayerId]);
 
   return (
     <div className="fp-root">
@@ -55,7 +69,7 @@ export default function LandingPage() {
       {activePlayerId && (
         <>
           <button
-            onClick={() => setActivePlayerId(null)}
+            onClick={goBackToList}
             style={{
               display:     'flex',
               alignItems:  'center',
