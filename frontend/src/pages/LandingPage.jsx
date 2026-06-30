@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { usePlayer } from '../hooks/usePlayer';
 import PlayerSearch from '../components/PlayerSearch';
 import PlayerCard from '../components/PlayerCard';
@@ -30,16 +30,12 @@ export default function LandingPage() {
   }
 
   function goBackToList() {
+    const y = savedScrollY.current;
     setActivePlayerId(null);
-  }
-
-  // Restore scroll position when returning to the list
-  useEffect(() => {
-    if (!activePlayerId && savedScrollY.current > 0) {
-      const y = savedScrollY.current;
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => window.scrollTo(0, y));
-    }
-  }, [activePlayerId]);
+    });
+  }
 
   return (
     <div className="fp-root">
@@ -97,9 +93,9 @@ export default function LandingPage() {
         </>
       )}
 
-      {!activePlayerId && (
+      <div style={{ display: activePlayerId ? 'none' : undefined }}>
         <PlayerListView onSelectPlayer={selectPlayer} />
-      )}
+      </div>
     </div>
   );
 }
